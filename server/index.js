@@ -3,9 +3,9 @@ const app = express();
 
 // ルート（http://localhost/）にアクセスしてきたときに「Hello」を返す
 app.get('/say-hello', (req, res) => {
-  // res.set({ 'Access-Control-Allow-Origin': '*' });
+  res.set({ 'Access-Control-Allow-Origin': '*' });
   res.send('Hello!!');
-  res.json('Hello!!');
+  // res.json('Hello!!');
 });
 
 // Port8000でサーバを立てる
