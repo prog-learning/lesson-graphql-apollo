@@ -1,12 +1,28 @@
 const express = require('express');
+const { graphqlHTTP } = require('express-graphql');
+const {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+} = require('graphql');
+
 const app = express();
 
-// ルート（http://localhost/）にアクセスしてきたときに「Hello」を返す
-app.get('/say-hello', (req, res) => {
-  res.set({ 'Access-Control-Allow-Origin': '*' });
-  res.send('Hello!!');
-  // res.json('Hello!!');
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'hello',
+    fields: () => ({
+      message: {
+        type: GraphQLString,
+        resolve: () => 'hello gql'
+      }
+    })
+  })
 });
 
-// Port8000でサーバを立てる
-app.listen(8000, () => console.log('Listening on port 8000'));
+app.use('/hello', graphqlHTTP({
+  // schema: schema,
+  graphiql: true
+}));
+
+app.listen(4000, () => console.log('Server Running!! port:4000'));
