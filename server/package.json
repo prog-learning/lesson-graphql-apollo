@@ -15,5 +15,8 @@
     "express-graphql": "^0.12.0",
     "graphql": "^15.5.0",
     "node": "^16.0.0"
+  },
+  "script": {
+    "start": "npx nodemon index.js"
   }
 }
