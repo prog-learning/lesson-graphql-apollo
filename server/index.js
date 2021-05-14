@@ -1,89 +1,123 @@
-const express = require('express');
-// const { graphqlHTTP } = require('express-graphql');
-const {
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString,
-} = require('graphql');
+/* Lesson GraphQL */
 
-const { ApolloServer } = require('apollo-server');
+/* 今回使用するサンプルデータ */
+const fruits = [
+  { id: '0', name: 'apple', color: 'red', descriotion: 'スティーブ・ジョブズ' },
+  { id: '1', name: 'banana', color: 'yellow', haveEaten: true },
+  { id: '2', name: 'cherry', color: 'red' },
+];
+let _id = 3;
 
-// const app = express();
-
-// 型を定義
+/* Queryの型を定義する */
 /**
- * 型
+ * スカラー型の種類
  * Int...符号付き32ビット整数
- * String
- * Boolean
- * ID
+ * String...文字列
+ * Boolean...真偽値
+ * ID...IDとしてのString
+ * !は必須項目の意味
  */
 const typeDefs = `
+  # Query Type ...最上位のデータの型を定義（名前は常に"Query"）
   type Query {
-    totalPhotos: Int!,
-    isDone: Boolean,
-    allPhotos: [Photo]!,
+    greet: String!,
+    totalFruits: Int!,
+    allFruits: [Fruit]!,
   }
 
+  # Mutation Type...更新関数の引数と戻り値の型を定義
   type Mutation {
-    postPhoto(name:String! description:String):Boolean!
+    # addFruit(name: String!, color: String!, description: String): String!
+    addFruit(data: PostFruit!): String!
+    eatFruit(name: String!): [Fruit]!
+    # removeFruit(name:String! description:String): Boolean!
   }
 
-  type Photo {
-    id:ID!,
-    name: String!,
-    url: String!,
-    description: String,
-  }
+  # Object Type...型をオブジェクト化
   type Fruit {
-    id:ID!,
+    id: ID!,
     name: String!,
-    color: String!,
+    color: FruitColor!,
     description: String,
-    ate: Boolean,
+    haveEaten: Boolean,
   }
 
+  # Input Type...Mutationの引数に使う型をまとめる
+  input PostFruit {
+    "ここは果物の名前です.（ここに公開される注釈を書くことができます.）"
+    name: String!,
+    "果物の色を教えて下さい"
+    color: FruitColor!,
+    "ここは説明です.オプショナルです."
+    description: String,
+  }
+
+  # Enum Type...特定の文字列のみの型を作成
+  enum FruitColor {
+    red
+    green
+    orange
+    yellow
+    blue
+    purple
+    pink
+  }
 `;
 
-let _id = 0;
-const photos = [
-  {
-    id: 99,
-    name: 'sample',
-    url: 'aaaa',
-    description: 'bbb',
-  },
-];
 
 // typeDefsとresolversと一致するように
 const resolvers = {
   Query: {
-    totalPhotos: () => photos.length,
-    isDone: () => false,
-    allPhotos: () => photos,
-    // fruits: () => fruits,
+    greet: () => 'Hello GraphQL!!',
+    totalFruits: () => fruits.length,
+    allFruits: () => fruits,
   },
   Mutation: {
-    postPhoto(parent, args) {
+    addFruit(parent, args) {
       // 処理を書く
-      let newPhoto = { id: _id++, ...args };
-      photos.push(newPhoto);
+      console.log(parent);
+      console.log(args);
+      // 引数はargsにオブジェクトで入る
+      let newFruits = { id: _id++, haveEaten: false, ...args.data };
+      fruits.push(newFruits);
       // データベースに保存する処理もここに
-      return true;
+      return `${args.data.name}を拾った`;
+    },
+    eatFruit(parent, args) {
+      fruits.map(fruit => {
+        if (fruit.name === args.name) {
+          fruit.haveEaten = true;
+          return fruit;
+        }
+        return fruit;
+      });
+      return fruits;
     }
   }
 };
 
+/* エンドポイントの作成 */
+// const express = require("express");
+// const app = express();
+// const corsOptions = {
+//   origin: "http://localhost:3000",
+//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// };
+// app.use(
+//   "/graphql",
+//   bodyParser.json(),
+//   cors(corsOptions),
+//   graphqlExpress({ schema })
+// );
+// app.use("/graphiql", graphiqlExpress({ endpointURL: "/graphql" }));
+// app.listen(4000, () => {
+//   console.log("Go to http://localhost:4000to run queries!");
+// });
 
-const fruits = [
-  { name: 'apple', color: 'red' },
-  { name: 'banana', color: 'yellow' },
-  { name: 'cherry', color: 'red' },
-];
-
+const { ApolloServer } = require('apollo-server');
 const server = new ApolloServer({
   typeDefs,
   resolvers,
 });
 
-server.listen(4000).then(() => console.log('4000だよ'));;
+server.listen(4000).then(() => console.log('localhost:4000で実行中...'));;
