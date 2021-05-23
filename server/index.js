@@ -2,7 +2,7 @@
 
 /* 今回使用するサンプルデータ */
 const fruits = [
-  { id: '0', name: 'apple', color: 'red', descriotion: 'スティーブ・ジョブズ' },
+  { id: '0', name: 'apple', color: 'red', description: 'スティーブ・ジョブズ' },
   { id: '1', name: 'banana', color: 'yellow', haveEaten: true },
   { id: '2', name: 'cherry', color: 'red' },
 ];

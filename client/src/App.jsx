@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
 const ALL_FRUITS = gql`
-  query Query {
-      allFruits
+  query {
+      allFruits{
+        id
+        name
+        color
+        haveEaten
+        description
+      }
     }
+`;
+const GET_FRUIT = gql`
+  mutation getFruit($name:String!, $color:String!, $description:String){
+    addFruit(name:$name, color:$color, description:$description)
+  }
 `;
 
 function App() {
@@ -15,9 +25,20 @@ function App() {
   const [description, setDescription] = useState('');
 
   const { loading, error, data } = useQuery(ALL_FRUITS);
+  const [mutationName] = useMutation(GET_FRUIT);
+
+  const addFruit = () => {
+    mutationName({
+      variables: {
+        name: "デコポン",
+        color: "orange",
+        description: "でべそある",
+      }
+    });
+  };
+
   console.log(data);
 
-  const addFruit = () => { };
 
   return (
     <div>

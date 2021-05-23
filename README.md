@@ -2,8 +2,13 @@
 
 ## Install
 
-- apollo-client
-- graphql
+- client
+
+  - apollo-client
+
+- server
+  - graphql
+  - apollo-server
 
 `npm install @apollo/client graphql`
 
