@@ -25,12 +25,14 @@ const GET_FRUIT = gql`
 `;
 
 function App() {
-  const [name, setName] = useState('');
+  const [name, setName] = useState('デコポン');
+  const [color, setColor] = useState('orange');
+  const [description, setDescription] = useState('でべそがある');
+
   const [eatName, setEatName] = useState('');
-  const [color, setColor] = useState('');
-  const [description, setDescription] = useState('');
 
   const { loading, error, data } = useQuery(ALL_FRUITS);
+
   const [mutationName] = useMutation(GET_FRUIT);
 
   // const addFruit = () => {
@@ -38,21 +40,22 @@ function App() {
   //     variables: {
   //       input: {
   //         icon: '🍊',
-  //         name: "デコポン",
-  //         color: "orange",
-  //         description: "でべそある",
+  //         name
+  //         color,
+  //         description,
   //       }
   //     }
   //   });
   // };
+
   const addFruit = () => {
     const get = mutationName({
       variables: {
         input: {
           icon: '🍊',
-          name: "デコポン",
-          color: "orange",
-          description: "でべそある",
+          name: name,
+          color: 'orange',
+          description: 'でべそがある',
         }
       }
     });
@@ -66,7 +69,7 @@ function App() {
   return (
     <div>
       <h1>Lesson GraphQL</h1>
-      <h2>Fruit List</h2>
+      <h2>My fruits</h2>
       {loading && <p>読込中...</p>}
       {data?.allFruits.map(item => <div key={item.id}>
         <h3>{item.icon} {item.name}</h3>
@@ -74,25 +77,36 @@ function App() {
         <p>{item.haveEaten ? '食べたことがある' : 'まだ食べてない'}</p>
       </div>)}
       <hr />
+
       <h2>Add fruit</h2>
       <label>name</label>
       <br />
-      <input type="text" value={name} onChange={(e) => setName()} />
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
       <br />
       <label>color</label>
       <br />
-      <input type="text" value={color} onChange={(e) => setColor()} />
+      <select value={color} onChange={(e) => setColor(e.target.value)}>
+        <option value='red'>red</option>
+        <option value='green'>green</option>
+        <option value='orange'>orange</option>
+        <option value='yellow'>yellow</option>
+        <option value='blue'>blue</option>
+        <option value='purple'>purple</option>
+        <option value='pink'>pink</option>
+        <option value='gray'>gray</option> {/* Error */}
+      </select>
       <br />
       <label>description</label>
       <br />
-      <textarea value={description} onChange={(e) => setDescription()} />
+      <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
       <br />
       <button onClick={addFruit}>追加</button>
       <hr />
+
       <h2>Eat fruit</h2>
       <div>
         <label>何を食べますか？</label>
-        <input type="text" value={eatName} onChange={(e) => setEatName()} />
+        <input type="text" value={eatName} onChange={(e) => setEatName(e.target.value)} />
         <button>食べる</button>
       </div>
     </div>
