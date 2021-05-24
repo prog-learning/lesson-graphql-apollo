@@ -7,9 +7,9 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@ap
 /* APIを叩く */
 const httpLink = createHttpLink({ uri: 'http://localhost:4000', });
 const client = new ApolloClient({
-  // uri: 'https://localhost:4000/',
+  // uri: 'https://localhost:4000/', // これLocalだとエラー
+  link: httpLink, // こうする
   cache: new InMemoryCache(),
-  link: httpLink,
 });
 
 ReactDOM.render(

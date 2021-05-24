@@ -2,9 +2,9 @@
 
 /* 今回使用するサンプルデータ */
 const fruits = [
-  { id: '0', name: 'apple', color: 'red', description: 'スティーブ・ジョブズ' },
-  { id: '1', name: 'banana', color: 'yellow', haveEaten: true },
-  { id: '2', name: 'cherry', color: 'red' },
+  { id: '0', icon: '🍎', name: 'apple', color: 'red', description: 'スティーブ・ジョブズ' },
+  { id: '1', icon: '🍌', name: 'banana', color: 'yellow', haveEaten: true },
+  { id: '2', icon: '🍒', name: 'cherry', color: 'red' },
 ];
 let _id = 3;
 
@@ -27,7 +27,7 @@ const typeDefs = `
 
   # Mutation Type...更新関数の引数と戻り値の型を定義
   type Mutation {
-    # addFruit(name: String!, color: String!, description: String): String!
+    # addFruit(icon: String!, name: String!, color: String!, description: String): String!
     addFruit(data: PostFruit!): String!
     eatFruit(name: String!): [Fruit]!
     # removeFruit(name:String! description:String): Boolean!
@@ -36,6 +36,7 @@ const typeDefs = `
   # Object Type...型をオブジェクト化
   type Fruit {
     id: ID!,
+    icon: String!,
     name: String!,
     color: FruitColor!,
     description: String,
@@ -44,6 +45,7 @@ const typeDefs = `
 
   # Input Type...Mutationの引数に使う型をまとめる
   input PostFruit {
+    icon: String!,
     "ここは果物の名前です.（ここに公開される注釈を書くことができます.）"
     name: String!,
     "果物の色を教えて下さい"
@@ -78,10 +80,12 @@ const resolvers = {
       console.log(parent);
       console.log(args);
       // 引数はargsにオブジェクトで入る
-      let newFruits = { id: _id++, haveEaten: false, ...args.data };
+      // let newFruits = { id: _id++, haveEaten: false, ...args };
+      let newFruits = { id: _id++, haveEaten: false, ...args.data }; // 引数$inputをdataにまとめたとき
       fruits.push(newFruits);
       // データベースに保存する処理もここに
-      return `${args.data.name}を拾った`;
+      // return `${args.name}を拾った`;
+      return `${args.data.name}を拾った`; // 引数$inputをdataにまとめたとき
     },
     eatFruit(parent, args) {
       fruits.map(fruit => {
@@ -96,24 +100,7 @@ const resolvers = {
   }
 };
 
-/* エンドポイントの作成 */
-// const express = require("express");
-// const app = express();
-// const corsOptions = {
-//   origin: "http://localhost:3000",
-//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-// };
-// app.use(
-//   "/graphql",
-//   bodyParser.json(),
-//   cors(corsOptions),
-//   graphqlExpress({ schema })
-// );
-// app.use("/graphiql", graphiqlExpress({ endpointURL: "/graphql" }));
-// app.listen(4000, () => {
-//   console.log("Go to http://localhost:4000to run queries!");
-// });
-
+/* Apollo Server の作成と起動 */
 const { ApolloServer } = require('apollo-server');
 const server = new ApolloServer({
   typeDefs,
