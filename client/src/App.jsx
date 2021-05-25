@@ -31,7 +31,9 @@ function App() {
 
   const [eatName, setEatName] = useState('');
 
-  const { loading, error, data } = useQuery(ALL_FRUITS);
+  const { loading, error, data, refetch } = useQuery(ALL_FRUITS,
+    { pollInterval: 500, } // 0.5ごとにFetch
+  );
 
   const [mutationName] = useMutation(GET_FRUIT);
 
@@ -53,7 +55,7 @@ function App() {
       variables: {
         input: {
           icon: '🍊',
-          name: name,
+          name: 'デコポン',
           color: 'orange',
           description: 'でべそがある',
         }

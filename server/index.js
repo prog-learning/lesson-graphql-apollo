@@ -22,7 +22,8 @@ const typeDefs = `
   type Query {
     greet: String!,
     totalFruits: Int!,
-    allFruits: [Fruit]!,
+    allFruits: [Fruit],
+    filterFruits(limit: Int, color: FruitColor): [Fruit],
   }
 
   # Mutation Type...更新関数の引数と戻り値の型を定義
@@ -73,11 +74,24 @@ const resolvers = {
     greet: () => 'Hello GraphQL!!',
     totalFruits: () => fruits.length,
     allFruits: () => fruits,
+    filterFruits: (_, args) => {
+      const limit = args.limit || null;
+      const color = args.color || "";
+      let result = fruits;
+      if (color) {
+
+        result = fruits.filter(item => item.color === color);
+      }
+      if (limit) {
+        result = result.slice(0, limit);
+      }
+      return result;
+    },
   },
   Mutation: {
     addFruit(parent, args) {
       // 処理を書く
-      console.log(parent);
+      // console.log(parent);
       console.log(args);
       // 引数はargsにオブジェクトで入る
       // let newFruits = { id: _id++, haveEaten: false, ...args };
@@ -88,14 +102,13 @@ const resolvers = {
       return `${args.data.name}を拾った`; // 引数$inputをdataにまとめたとき
     },
     eatFruit(parent, args) {
-      fruits.map(fruit => {
+      return fruits.map(fruit => {
         if (fruit.name === args.name) {
           fruit.haveEaten = true;
           return fruit;
         }
         return fruit;
       });
-      return fruits;
     }
   }
 };
